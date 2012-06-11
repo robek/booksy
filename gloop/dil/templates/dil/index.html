@@ -1,0 +1,16 @@
+{% extends "dil/base.html" %}
+
+{% block title %} index {% endblock %}
+
+{% block content %} 
+  <h3> Companies: </h3>
+  <ul>
+  {% if all_comps %}
+  {% for company in all_comps %}
+    <li><a href="{% url profile company %}">{{ company }}</a></li>
+  {% endfor %}
+  {% else %}
+    <li> empty :( </li>
+  {% endif %}
+  </ul>  
+{% endblock %}

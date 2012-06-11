@@ -1,0 +1,62 @@
+{% extends "dil/base.html" %}
+
+{% block title %} Register {% endblock %}
+
+{% block content %} 
+  <h1> You are a...</h1>
+  <div class="row">
+  <div class="span6">
+  <h3> client </h3></br>
+  <form action="" method="post">{% csrf_token %}      
+    <div id="client">
+    {{ client_f.as_p }}
+    </div>
+  </div>
+  <div class="span6">
+  <h3> company </h3> </br>
+    <div id="company">
+    {{ company_f.as_p }}
+    </div>
+    <input type="submit" value="Submit" />
+  </form>
+  </div> 
+  </div>
+<script type="text/javascript">
+  $(document).ready(function(){
+      $("#id_is_client").attr("value", true);
+      $("#id_is_company").attr("value", false);
+    $("#company").click(function(){
+      $("#id_is_client").attr("value", false);
+      {% for field in client_f %}
+        {% if field.html_name != "is_client" %}
+          $("#id_{{ field.html_name }}").attr("disabled", true);
+        {% endif %}
+      {% endfor %}
+      {% for field in company_f %}
+        {% if field.html_name != "is_company" %}
+          $("#id_{{ field.html_name }}").attr("disabled", false);
+        {% endif %}
+      {% endfor %}
+      $("#id_is_company").attr("value", true);
+    });
+    $("#client").click(function(){
+      $("#id_is_company").attr("value", false);
+      {% for field in company_f %}
+        {% if field.html_name != "is_company" %}
+          $("#id_{{ field.html_name }}").attr("disabled", true);
+        {% endif %}
+      {% endfor %}
+      {% for field in client_f %}
+        {% if field.html_name != "is_client" %}
+          $("#id_{{ field.html_name }}").attr("disabled", false);
+        {% endif %}
+      {% endfor %}
+      $("#id_is_client").attr("value", true);
+    });
+
+  });
+</script>
+
+
+{% endblock %}
+

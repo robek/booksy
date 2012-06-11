@@ -1,0 +1,122 @@
+{% extends "dil/base.html" %}
+
+{% block title %} {{ company }} profile {% endblock %}
+
+{% block content %} 
+<div class="container">
+  <div class="row">
+    <div class="span4">
+      <h2> Buisness Card {% if user == company.base %} <strong><a href="#"> Edit </a></strong> {% endif %} </h2>
+      <b> Username: </b> {{ company }} </br>
+      <b> Company Name: </b> {{ company.c_name }} </br>
+      <b> Address: </b> {{ company.c_address }} </br>
+      <b> Telephone: </b> {{ company.c_telephone }} </br>
+
+      <h2> Services {% if user == company.base %} <a href="#" id="add_s"> Add </a> {% endif %} </h2>
+
+      {% if user == company.base %}
+      <div id="add_s" style="display:none;">
+        <form class="well" action="" method="post">{% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" value="Save" />
+        </form>
+      </div>
+      {% endif %}
+
+      {% for s in services %}
+      <div class="well" id="id_{{s}}"> 
+        {{ s }} <a id="edit_{{ s }}"> Edit </a> <a href="#" id="remove_{{ s }}"> Remove </a>
+        
+        <div id="edit_{{ s }}" style="display:none;">
+          <form action="" method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Save" />
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+    
+    <div class="span8">
+      <h2> Calendar: </h2>
+      <div class="btn-group">
+        <button class="btn" onclick="Dajaxice.dil.aPrev(aCalendar_callback, { 'date' : '{{ week_days.0 }}' });" id="prev_btn">Previous</button>
+        <button class="btn" onclick="Dajaxice.dil.aNext(aCalendar_callback, { 'date' : '{{ week_days.6 }}' });" id="next_btn">Next</button>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+           <th> Monday </br><div id="monday"> {{ week_days.0 }} </div></th>
+           <th> Tuesday </br><div id="tuesday"> {{ week_days.1 }} </div></th>
+           <th> Wednesday </br><div id="wednesday"> {{ week_days.2 }} </div></th>
+           <th> Thursday </br><div id="thursday"> {{ week_days.3 }} </div></th>
+           <th> Friday </br><div id="friday"> {{ week_days.4 }} </div></th>
+           <th> Saturday </br><div id="saturday"> {{ week_days.5 }} </div></th>
+           <th> Sunday </br><div id="sunday"> {{ week_days.6 }} </div></th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+    </div> <!-- span8 -->
+  </div> <!-- row -- >
+</div> <!-- container -->
+    <script type="text/javascript" charset="utf-8">
+      function aCalendar_callback(data){
+        $(document).ready(function(){
+           var prev_str = "Dajaxice.dil.aPrev(aCalendar_callback, { \'date\' : \'" + data.monday + "\' })";
+           var next_str = "Dajaxice.dil.aNext(aCalendar_callback, { \'date\' : \'" + data.sunday + "\' })";
+           $("button#next_btn").attr("onclick", next_str);
+           $("button#prev_btn").attr("onclick", prev_str);
+           $("div#monday").html(data.monday);
+           $("div#tuesday").html(data.tuesday);
+           $("div#wednesday").html(data.wednesday);
+           $("div#thursday").html(data.thursday);
+           $("div#friday").html(data.friday);
+           $("div#saturday").html(data.saturday);
+           $("div#sunday").html(data.sunday);
+          });
+      }
+      {% if user == company.base %}
+
+      $(document).ready(function(){
+        // code for handling new service
+        $("a#add_s").click(function(){
+          $("div#add_s input#id_service_action").attr("value","new");
+          $("div#add_s input#id_service_name").attr("value","");
+          $("div#add_s input#id_service_prize").attr("value","");
+          $("div#add_s input#id_service_duration").attr("value","");
+          $("div#add_s").slideToggle("slow", function(){
+            $("a#add_s").html( ($("a#add_s").html() == "Hide") ? "Add" : "Hide" );
+          });
+        });
+
+        // code for editing existing services
+        {% for s in services %}
+        $("a#edit_{{ s }}").click(function(){
+          $("div#edit_{{ s }} input#id_service_action").attr("value","edit_{{ s.s_name }}");
+          $("div#edit_{{ s }} input#id_service_name").attr("value","{{ s.s_name }}");
+          $("div#edit_{{ s }} input#id_service_prize").attr("value","");
+          $("div#edit_{{ s }} input#id_service_duration").attr("value","{{ s.s_duration }}");
+          $("div#edit_{{ s }}").slideToggle("slow");
+        });
+        $("a#remove_{{ s }}").click(function(){
+          var answer = confirm("Are you sure you want to delete this service?");
+          if (answer){          
+            $("div#id_{{ s }}").slideToggle("slow");
+            $("div#id_{{ s }}").html("");
+          }
+        });
+
+        {% endfor %}
+
+
+      });
+
+
+      {% endif %}
+    </script>
+
+{% endblock %}
