@@ -2,7 +2,7 @@ from django.shortcuts import render_to_response, HttpResponseRedirect
 from django.template import RequestContext # for static files/urls
 from dil.auth_f import ClientRegistrationForm, CompanyRegistrationForm, LoginForm
 from dil.service_f import ServiceForm
-from dil.ajax import aPrev, aNext
+#from dil.ajax import change_week
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from dil.models import Company, Client, Service
@@ -33,6 +33,7 @@ def my_register(request):
             data = form.cleaned_data
             username = data[kind+'_username']
             password = data[kind+'_password1']
+            print username, password
             u = User.objects.create_user(username=username, password=password)
             u.save()
             if 'client' in kind:
@@ -57,6 +58,7 @@ def my_login(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            print username, password
             u = authenticate(username=username, password=password)
             if u:
                 login(request, u)
@@ -85,22 +87,6 @@ def my_profile(request, company_login):
     schedule = get_schedule(week_dates) # make 30minutes time slots
 
     form = ServiceForm()
-    if request.method == 'POST':
-        form = ServiceForm(request.POST)
-        if form.is_valid():
-            s_action = form.cleaned_data['service_action']
-            s_name = form.cleaned_data['service_name']
-            s_prize = form.cleaned_data['service_prize']
-            s_duration = form.cleaned_data['service_duration']
-            if "new" == s_action:
-                s = Service(s_owner=company, s_name=s_name,s_duration=s_duration)
-            else:
-                original = s_action[5:]
-                s = Service.objects.get(s_owner=company, s_name=original)
-                s.s_name = s_name
-                s.s_duration = s_duration
-                print s
-            s.save()
 
     services = Service.objects.filter(s_owner=company)
 

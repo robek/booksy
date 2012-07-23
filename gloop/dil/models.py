@@ -30,5 +30,6 @@ class Service(models.Model):
     s_owner = models.ForeignKey(Company, related_name='+')
     s_name = models.CharField(max_length=50)
     s_duration = models.IntegerField()
+    s_price = models.FloatField() # change spelling later
     def __unicode__(self):
         return str(self.s_name)
